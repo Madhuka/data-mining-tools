@@ -1,3 +1,5 @@
+#111.223.135.118 - [28/May/2013:23:54:59 +0530] "GET /SVRClientWeb/main/styles/theme-orange/appui/elements/elements.fieldset.css HTTP/1.1" 200 307 "https://www.sampathvishwa.com/SVRClientWeb/main/ui/common/index.jsp" "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.22 (KHTML, like Gecko) Ubuntu Chromium/25.0.1364.160 Chrome/25.0.1364.160 Safari/537.22" GET /SVRClientWeb/main/styles/theme-orange/appui/elements/elements.fieldset.css - HTTP/1.1 www.sampathvishwa.com
+
 import re
 import apachelog
 import pandas
@@ -15,10 +17,13 @@ from datetime import timedelta
 
 
 fformat = r'%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"'
-print 'starting'
+path = os.path.dirname(os.path.realpath(__file__))
+#temp
+pd.options.mode.chained_assignment = None  # default='warn'
+
+print 'starting reading log'
 p = apachelog.parser(fformat)
-# file names log, access_log
-log = open('D:/Research/Data/run02/access_log').readlines()
+log = open(path+'/log').readlines()
 xnr_of_lines = sum(1 for line in log)
 print '\nTotal Number of Lines in Converted Log File: ' + str(xnr_of_lines)
 print '\n'
@@ -32,7 +37,7 @@ for line in log:
                pass
                print "Unable to parse " + line
            data['%t'] = data['%t'][1:12]+' '+data['%t'][13:21]+' '+data['%t'][22:27]
-           
+          
            log_list.append(data)
            
 df = pd.DataFrame(log_list)
@@ -57,7 +62,7 @@ df['Time'] = df['Time'].apply(strptime_with_offset)
 print df.dtypes  
 print len(df)
     
-#df = df[~df['Request'].str.contains('jpg|jpeg|png|js|min.js|ico|bmp|gif|css|JPG|JPEG|PNG|JS|MIN.JS|ICO|BMP|GIF|CSS', na=False)]
+df = df[~df['Request'].str.contains('jpg|jpeg|png|js|min.js|ico|bmp|gif|css|JPG|JPEG|PNG|JS|MIN.JS|ICO|BMP|GIF|CSS', na=False)]
 
     
 df['Time'] = pandas.to_datetime(df['Time'])
@@ -80,7 +85,7 @@ print '\n\n'
 
 #output 
 df2 = pd.DataFrame(df1.reset_index())
-df2.to_csv('sessionsfile',sep = ',')
+df2.to_csv(path+'/sessions_file',sep = ',')
 mapSessionwithIP = df2[['session','IP','Agent']]   
 
 def gmet(x):
@@ -102,26 +107,11 @@ l = le.transform(requestlist)
 print '\n\n\n'
 df2['mapping'] = np.array(l)
 dfx = df2[['mapping','Request']].drop_duplicates(cols='mapping', take_last=False)
-dfx.sort_index(by=['mapping'], ascending=True).to_csv('mapping', index=False)
+dfx.sort_index(by=['mapping'], ascending=True).to_csv(path+'/mapping', index=False)
     
     
 
 df2['mapping'] = df2['mapping'].apply(str)  
 print df2[0:5]  
 df6 = pd.DataFrame(df2.groupby('session').apply(lambda x: ','.join(x.mapping))).reset_index()
-df6.to_csv('sessionsfile',sep = ',', index=False)                               
-           #testing 2
-    
-regex = '([(\d\.)]+) - - (\[(.*?)\]) "(.*?)\s/.*'
-#regex = '([(\d\.)]+) - - \[(.*?)\] "(.*?)\s/ (.*?)" (\d+) - "(.*?)" "(.*?)"'
-#regex = '.*'
-'''
-with open("D:/Research/Data/run01/test","r") as f:
-	for line in f:
-	       
-		#print line;
-		match = re.match(regex, line)
-		if match:
-		  print match.group()
-		  print '-->'+ match.group(3)
-'''
+df6.to_csv(path+'/sessions_file',sep = ',', index=False)                               
