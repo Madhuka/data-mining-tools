@@ -1,21 +1,17 @@
 """
-1st step to run
 readdding access_log with skiping line and formatting access_log
-author   :madhuka udantha
-email    : madhukaudantha@gmail.com
-date     : 2015-02-01
+
 """
 import re
 import timeit
 from collections import Counter
-import json
-import csv
 import os
-import sys
+import csv
 
-
-#regex to filter on nic.lk site data
-regex = '([a-zA-Z,.]*)(nic.lk )(.*?)'
+#regex = '(.*? nic.lk) (.*?)"(.*?)(.*?)"(.*?)"(.*?)"(.*?)"'
+regex = '(.*? nic.lk )(.*?)'
+#regex = '([(\d\.)]+) - - \[(.*?)\] "(.*?)\s/ (.*?)" (\d+) - "(.*?)" "(.*?)"'
+#regex = '.*'
 path = os.path.dirname(os.path.realpath(__file__))
 #buidlding string
 
@@ -25,11 +21,7 @@ SEPS = ','
 
 print 'starting to read accesslog file....'
 log_list = ""
-#filelist = ['access_log-20150125','access_log-20150208','access_log-20150222','access_log-20150301','access_log-20150302']
-filelist = ['access_log-20150125']
-for filename in filelist:
-    print 'Starting pre processing on '+ filename
-    with open(path+"/data/"+filename,"r") as f:
+with open(path+"/access_log","r") as f:
 
 	for line in f :
 	       
@@ -43,18 +35,38 @@ for filename in filelist:
 		 # print "1 "+match.group(2) 
 		 # print re.split(match.group(1), line)[1]
 		  count +=1  
-		  out = re.split(match.group(2), line)[1]
+		  out = re.split(match.group(1), line)[1]
 		  #print out+"iii"
 		  log_list += str(out)
-		  sys.stdout.write('|')
-		  #print count
-    #print 'Completed on '+ filename
-    #with open(path+"/log", "a") as myfile:
-     #   myfile.write(log_list)
-print "Total log count: " + str(count)
+		  '''
+		  print "2 "+match.group(2)
+		  print "3 "+match.group(3)
+		  print "4 "+match.group(4)
+		  print "5 "+match.group(5)
+		  print "6 "+match.group(6)
+		  out = match.group(2)
+		 # out += '"'
+		  out += match.group(4)
+		 # out += '"'
+		  record = [""+match.group(2)+"\""+match.group(4)+"\""+match.group(5)+''+match.group(6)+''+match.group(7)+""]
+                  count +=1
+                  out = [out]
+                  #record = 'www"'
+                  log_list.append(out)
+                  print count
+                  '''
+print "Total session count: " + str(count)
 #print log_list
 
-#writting to file  called log
-fd = open(path+"/log1", "w+") 
+#writting to file 
+fd = open(path+"/log", "w+") 
 fd.write(log_list)
 fd.close()
+
+        #for row in log_list:
+          #  print row
+            
+           # print row
+           # row += count
+            #count += 1
+           # print row

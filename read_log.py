@@ -14,16 +14,12 @@ from pandas import read_csv
 from datetime import datetime
 from datetime import timedelta
 
-
+path = os.path.dirname(os.path.realpath(__file__))
 
 fformat = r'%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"'
-path = os.path.dirname(os.path.realpath(__file__))
-#temp
-pd.options.mode.chained_assignment = None  # default='warn'
-
-print 'starting reading log'
+print 'starting'
 p = apachelog.parser(fformat)
-log = open(path+'/log').readlines()
+log = open(path+'/clean_log').readlines()
 xnr_of_lines = sum(1 for line in log)
 print '\nTotal Number of Lines in Converted Log File: ' + str(xnr_of_lines)
 print '\n'
@@ -68,7 +64,7 @@ df = df[~df['Request'].str.contains('jpg|jpeg|png|js|min.js|ico|bmp|gif|css|JPG|
 df['Time'] = pandas.to_datetime(df['Time'])
     
 #checking log date time period
-df9 = df[(df['Time'] > '2013-12-08 00:00') & (df['Time'] < '2015-01-19 23:59')]
+df9 = df[(df['Time'] > '2013-12-08 00:00') & (df['Time'] < '2015-12-19 23:59')]
 print len(df9)    
                  
                     
@@ -85,7 +81,7 @@ print '\n\n'
 
 #output 
 df2 = pd.DataFrame(df1.reset_index())
-df2.to_csv(path+'/sessions_file',sep = ',')
+df2.to_csv(path+'/sessionsfile',sep = ',')
 mapSessionwithIP = df2[['session','IP','Agent']]   
 
 def gmet(x):
@@ -114,4 +110,4 @@ dfx.sort_index(by=['mapping'], ascending=True).to_csv(path+'/mapping', index=Fal
 df2['mapping'] = df2['mapping'].apply(str)  
 print df2[0:5]  
 df6 = pd.DataFrame(df2.groupby('session').apply(lambda x: ','.join(x.mapping))).reset_index()
-df6.to_csv(path+'/sessions_file',sep = ',', index=False)                               
+df6.to_csv(path+'/sessionsfile',sep = ',', index=False)                               

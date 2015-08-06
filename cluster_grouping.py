@@ -5,9 +5,8 @@ for each cluster
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import os
 
-path = os.path.dirname(os.path.realpath(__file__))
+path = 'D:/Research/data/run03/'
 elementCount = 20
 
 #methods 
@@ -31,17 +30,15 @@ def pageCountInCluster(cNum,dataFrame):
      #print "\n"+45*"="
      print "clusterNo "+ str(cNum)+"\n"
      pids = ords.index.values
-     #print ords
+     print ords
      for num in range(0,len(pids)):    
         
         x = pids[num]
         #getting index in page count eg: 'p1'
-        indexs =  int(x[1:])  
-       
-       # print newid_df.loc[indexs-1]['pageID']  
+        indexs =  int(x[1:])       
+        #print newid_df.loc[indexs-1]['pageID']  
         #print newid_df.loc[indexs-1]['newID'] 
-        #print urldf.loc[indexs-1]['url']
-        print urldf.loc[indexs-1]['url'] + ";"+ str(ords[num])+""
+        print urldf.loc[indexs-1]['Request'] + ";"+ str(ords[num])+""
         #print urldf.loc[indexs-1]
 #counting session in each cluster      
 
@@ -58,10 +55,9 @@ def pageOldIDInCluster(cNum,dataFrame):
         
         x = pids[num]
         #getting index in page count eg: 'p1'
-        indexs =  int(x[1:])  
-             
+        indexs =  int(x[1:])       
         #print "'"+str (newid_df.loc[indexs-1]['pageID'])+"'"
-        xout.append(str (newid_df.loc[indexs-1]['url']))
+        xout.append(str (newid_df.loc[indexs-1]['pageID']))
         #print xout
      print "cluster"+ str(cNum)+" = "+ str(xout)   
 def clusterCounter(gb):
@@ -70,9 +66,9 @@ def clusterCounter(gb):
      
 #end of methods
 
-df = pd.read_csv(path+'/cluster-group2.csv')
-urldf = pd.read_csv(path+'/new_mapping.csv')
-newid_df = pd.read_csv(path+'/new_id.csv')
+df = pd.read_csv(path+'cluster-group2.csv')
+urldf = pd.read_csv(path+'new_mapping.csv')
+newid_df = pd.read_csv(path+'new_id.csv')
 gb = df.groupby('clusterNo')
 clusterCounter(gb)
 
@@ -92,10 +88,12 @@ chartting also
 
 
      
-for num in range(0,len(res)):    
+for num in range(0,len(res)-5):    
     pageCountInCluster(num,res.T[num])
     #pageOldIDInCluster(num,res.T[num])
-    #pageIdCountInCluster(num,res.T[num])
+    #print res
+    #res.to_csv('pageCountfile',sep = ',', index=False)     
+   # pageIdCountInCluster(num,res.T[num])
 '''  
 charting remove for temp  
 out  = res.T[3]

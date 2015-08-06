@@ -10,7 +10,7 @@ path = os.path.dirname(os.path.realpath(__file__))
 regex = '(.*?)"(.*?)"'
 SEPS = ','
 
-sessionsData = pd.read_csv(path+"/sessions_file")
+sessionsData = pd.read_csv(path+"/sessionsfile")
 mappingData = pd.read_csv(path+"/mapping")
 
 #replace each pageID for new page ID with skiping args in urls

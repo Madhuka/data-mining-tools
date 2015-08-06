@@ -1,22 +1,23 @@
 import re
 import timeit
 from collections import Counter
-import json
-import csv,os
+import os
+import csv
 
-path = os.path.dirname(os.path.realpath(__file__))
 regex = '(.*?)"(.*?)"'
-
+#regex = '([(\d\.)]+) - - \[(.*?)\] "(.*?)\s/ (.*?)" (\d+) - "(.*?)" "(.*?)"'
+#regex = '.*'
 
 #buidlding string
 
 count = 0
 PageNo = 0
 SEPS = ','
+path = os.path.dirname(os.path.realpath(__file__))
 
 print 'starting....'
 input = []
-with open(path+"/sessions_file","r") as f:
+with open(path+"/sessionsfile","r") as f:
 
 	for line in f:
 	       
@@ -43,11 +44,12 @@ totalCount = totalCount.most_common(100)
 
 #keylist = totalCount.values() #keys, values
 #keylist.sort()
+path = os.path.dirname(os.path.realpath(__file__))
 print len(totalCount)
 data = [("pageID","requestCount")]
 countNo = 1
 
-with open(path+'/most_common.csv', 'wb') as f1:
+with open(path+'/mostcommon.csv', 'wb') as f1:
         writer = csv.writer(f1)
         for row in totalCount:
             print row

@@ -6,7 +6,7 @@ import copy
 
 
 #CSV methods sorting, listing, 
-path = os.path.dirname(os.path.realpath(__file__))
+
 def csv_to_list(csv_file, delimiter=','):
     """ 
     Reads in a CSV file and returns the contents as list,
@@ -170,52 +170,48 @@ def filter_csv_col(csv_cont, col_name, mapping_csv_cont):
     new_mapping_body.insert(0, header)
     print new_mapping_body
     return new_mapping_body
-
-def filter2_csv_col(csv_cont, col_name, mappingid_csv_cont):
+#csv.field_size_limit(100000)
+def filter2_csv_col(csv_cont, col_name, mapping_csv_cont):
     """
-    mapping url for new ids
+   updating csv file from session file with mapping new page IDs
     
     """
 
     count = 0
-    header = ['mapping','oldID','requestCount','url']
+    header = csv_cont[0]
     body = csv_cont[1:]
-    map_header = mappingid_csv_cont[0]
-    map_body = mappingid_csv_cont[1:]
+    map_header = mapping_csv_cont[0]
+    map_body = mapping_csv_cont[1:]
     size_map_body = len(map_body)
     print header
-    print col_name
     current_old_id_col_name = "pageID"
-    request_count_col_name = "requestCount"
     current_new_id_col_name = "newID"
     
     col_index = int(header.index(col_name))
     id_col_index = int(map_header.index(current_old_id_col_name))
-    id_request_count_index = int(map_header.index(request_count_col_name))
     new_id_col_index = int(map_header.index(current_new_id_col_name))
     
     new_mapping_body = []
     Fout = []
-    
-    #body means the mapping_file_1.1
-    for MpageNo in map_body:
-         new_data=[]
-         #print MpageNo[id_col_index]
-         #print MpageNo[new_id_col_index]
-         for row in body:
-            #print row
-            data = row[1].split(",");
-            SNo = row[0] 
-            if int(MpageNo[id_col_index]) == int(SNo):
-                new_data.insert(0,MpageNo[new_id_col_index])
-                new_data.insert(1,MpageNo[id_col_index])
-                new_data.insert(2,MpageNo[id_request_count_index])
-                new_data.insert(3,str(data)[1:-1])
-                print new_data
-                Fout += [new_data]
+    for row in body:
+       # print row[1]
+        data = row[1].split(",");
+        SNo = row[0]
+        print row
+        if len(data)>=2:
+            new_data=[]
+            #print data
+            for pageNo in data:
+                for MpageNo in map_body:
+                    if int(MpageNo[id_col_index]) == int(pageNo):
+                      # new_data.append(MpageNo[id_col_index])
+                        new_data += MpageNo[new_id_col_index]
+            new_data.insert(0,SNo)
+            Fout += [new_data]
+            print new_data           
+    Fout.insert(0, header)
     #print Fout
    # print new_mapping_body
-    Fout.insert(0, header)
     return Fout
 
 
@@ -231,7 +227,7 @@ def filter3_csv_col(csv_cont, col_name, mapping_csv_cont):
     map_header = mapping_csv_cont[0]
     map_body = mapping_csv_cont[1:]
     size_map_body = len(map_body)
-   # print header
+    print header
     current_old_id_col_name = "pageID"
     current_new_id_col_name = "newID"
     
@@ -252,13 +248,12 @@ def filter3_csv_col(csv_cont, col_name, mapping_csv_cont):
             #print data
             for pageNo in data:
                 for MpageNo in map_body:
-                    #print MpageNo[id_col_index] +"=="+ pageNo
                     if int(MpageNo[id_col_index]) == int(pageNo):
                       # new_data.append(MpageNo[id_col_index])
-                        new_data[(int(MpageNo[new_id_col_index]))-1] = 1
-            #new_data.insert(0,SNo)
+                        new_data[int(MpageNo[new_id_col_index])] = 1
+            new_data.insert(0,SNo)
             Fout += [new_data]
-          #  print new_data           
+            print new_data           
     Fout.insert(0, header)
     print Fout
    # print new_mapping_body
@@ -298,25 +293,23 @@ def process3_csv(csv_in, csv_out,csv_map):
     csv_cont = csv_to_list(csv_in)
     csv_map = csv_to_list(csv_map)
     csv_marked = copy.deepcopy(csv_cont)
-    csv_marked = filter2_csv_col(csv_marked,"mapping",csv_map)
+    csv_marked = filter2_csv_col(csv_marked,"0",csv_map)
     write_csv(csv_out, csv_marked) 
     
 def process4_csv(csv_in, csv_out,csv_map):
 
-    #loading session file
     csv_cont = csv_to_list(csv_in)
-    #loading mapping file 
     csv_map = csv_to_list(csv_map)
-   # print csv_cont
     csv_marked = copy.deepcopy(csv_cont)
     csv_marked = filter3_csv_col(csv_marked,"0",csv_map)
     write_csv(csv_out, csv_marked) 
 
 
 #End of CSV 
-#1st running for most common ids
-#process_csv(path+"/most_common.csv",path+"/new_id.csv")
+path = os.path.dirname(os.path.realpath(__file__))
+#process_csv(path+"/mostcommon.csv",path+"/new_id.csv")
 print ("processing 1 done.")
-#process2_csv(path+"/mapping",path+"/new_mapping.csv",path+"/new_id.csv")
-#process3_csv(path+"/sessions_file_1.1",path+"/new_sessionsfile.csv",path+"/new_id.csv")
-process4_csv(path+"/sessions_file",path+"/new_cluster_sessionsfile.csv",path+"/new_id.csv")
+
+process2_csv(path+"/mapping",path+"/new_mapping.csv",path+"/new_id.csv")
+#process3_csv(path+"/sessionsfile",path+"/new_sessionsfile.csv",path+"/new_id.csv")
+#process4_csv(path+"/sessionsfile",path+"/new_cluster_sessionsfile.csv",path+"/new_id.csv")
